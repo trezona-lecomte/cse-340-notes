@@ -61,8 +61,36 @@ L⁰(R) = {ɛ}
 Lⁱ(R) = Lⁱ⁻¹(R) . L(R)
 L(R*) = ⋃ᵢ>=₀Lⁱ(R)
 
+### Tokens ###
 
+ID = letter . (letter | digit | _)*
+DOT = \.
+NUM = pdigit . (digit)* | 0
+DECIMAL = NUM . DOT . digit . digit*
 
+What is the first token in `"1.1abc1.1"`?
 
+    "1.1abc1.1"  | Potential    | Match      | Notes
+     ^           | DECIMAL, NUM | NUM(1)     |
+     ^^          | DECIMAL      |     ∅      | Don't have to check ID
+     ^^^         | DECIMAL      | DECIMAL(3) |
+     ^^^^        |      ∅       |     ∅      |
 
+The longest prefix match is `DECIMAL`: `"1.1"`.
 
+And continuing:
+
+    "abc1.1"  | Potential    | Match
+     ^        | ID           | ID(1)
+     ^^       | ID           | ID(2)
+     ^^^      | ID           | ID(3)
+     ^^^^     | ID           | ID(4)
+     ^^^^^    | ∅            | ∅
+
+    ".1"      | Potential    | Match
+     ^        |              | DOT
+
+    "1"       | Potential    | Match
+     ^        |              | NUM
+
+So `"1.1abc1.1"` -> `DECIMAL(1.1)`, `ID(abc1)`, `DOT`, `NUM(1)`.
